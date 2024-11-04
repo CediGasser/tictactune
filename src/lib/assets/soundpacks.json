@@ -1,0 +1,13 @@
+{
+  "TicTacFunk": {
+    "name": "Tic Tac Funk",
+    "bpm": 115,
+    "beatStart": 1500,
+    "trackPath": "/sounds/funk/track.mp3",
+    "soundX": "/sounds/funk/x.mp3",
+    "soundO": "/sounds/funk/o.mp3",
+    "soundWin": "/sounds/funk/win.mp3",
+    "soundDraw": "/sounds/funk/draw.mp3",
+    "soundOffbeat": "/sounds/funk/offbeat.mp3"
+  }
+}

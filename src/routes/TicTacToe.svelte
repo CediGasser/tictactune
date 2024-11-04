@@ -7,7 +7,6 @@
 	interface Props {
 		onGameEnd: (result: 'xWon' | 'oWon' | 'draw') => void;
 	}
-
 	let { onGameEnd }: Props = $props();
 
 	function makeMove(index: number) {
@@ -66,6 +65,7 @@
 		gap: 10px;
 		margin: 20px auto;
 	}
+
 	button {
 		width: 100px;
 		height: 100px;
