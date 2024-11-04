@@ -1,9 +1,9 @@
 <script>
-    import TicTacToe from "./TicTacToe.svelte";
+	import TicTacToe from './TicTacToe.svelte';
 </script>
 
 <h1>Tic Tac Tune</h1>
 
 <main>
-    <TicTacToe />
+	<TicTacToe />
 </main>
