@@ -17,6 +17,8 @@ export class Soundpack {
   constructor(track: HTMLAudioElement, soundX: HTMLAudioElement, soundO: HTMLAudioElement) {
     this.track = track;
     this.sounds = [soundX, soundO];
+    this.track.load()
+    this.sounds.forEach(sound => sound.load());
   }
 
   playTrack() {
@@ -24,9 +26,14 @@ export class Soundpack {
     this.track.play();
   }
 
-  playSound(index: number) {
-    this.sounds[index].currentTime = 0;
-    this.sounds[index].play();
+  playX() {
+    this.sounds[0].currentTime = 0
+    this.sounds[0].play();
+  }
+
+  playO() {
+    this.sounds[1].currentTime = 0;
+    this.sounds[1].play();
   }
 
   fadeOutTrack() {

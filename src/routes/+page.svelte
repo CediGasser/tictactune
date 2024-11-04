@@ -8,14 +8,23 @@
 
 	let soundpack: Soundpack;
 
-	const onGameEnd = (result: 'xWon' | 'oWon' | 'draw') => {
-		gameState = result;
-	};
-
 	const startGame = async () => {
 		soundpack = await loadSoundpack(Soundpacks['TicTacFunk']);
 		gameState = 'running';
 		soundpack.playTrack();
+	};
+
+	const onGameEnd = (result: 'xWon' | 'oWon' | 'draw') => {
+		soundpack.fadeOutTrack();
+		gameState = result;
+	};
+
+	const onMove = (turn: 'X' | 'O') => {
+		if (turn === 'X') {
+			soundpack.playX();
+		} else {
+			soundpack.playO();
+		}
 	};
 </script>
 
@@ -25,7 +34,7 @@
 		<button onclick={startGame}>Start Game</button>
 	{/if}
 	{#if gameState === 'running'}
-		<TicTacToe {onGameEnd} />
+		<TicTacToe {onGameEnd} {onMove} />
 	{/if}
 	{#if gameState === 'xWon'}
 		<h1>X Won</h1>

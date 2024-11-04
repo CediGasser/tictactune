@@ -1,18 +1,20 @@
 <script lang="ts">
 	let board = $state(Array(9).fill(null)); // 3x3 Grid
 	let winner: null | 'X' | 'O' = null; //Track Winner
-	let turn = 'X'; // Track Players Turn
+	let turn: 'X' | 'O' = 'X'; // Track Players Turn
 	let isDraw = false;
 
 	interface Props {
 		onGameEnd: (result: 'xWon' | 'oWon' | 'draw') => void;
+		onMove: (turn: 'X' | 'O') => void;
 	}
-	let { onGameEnd }: Props = $props();
+	let { onGameEnd, onMove }: Props = $props();
 
 	function makeMove(index: number) {
 		if (board[index] || winner) return;
 
 		board[index] = turn;
+		onMove(turn);
 		checkWinner();
 
 		if (!winner) {
@@ -51,7 +53,7 @@
 <div>
 	<div class="board">
 		{#each board as cell, index}
-			<button onclick={() => makeMove(index)}>
+			<button onmousedown={() => makeMove(index)}>
 				{cell}
 			</button>
 		{/each}
