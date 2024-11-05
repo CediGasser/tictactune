@@ -11,58 +11,73 @@ type SoundpackConfig = {
 };
 
 export class Soundpack {
-  track: HTMLAudioElement;
-  sounds: HTMLAudioElement[];
+  track: AudioBufferSourceNode;
+  soundX: AudioBufferSourceNode | null = null;
+  soundO: AudioBufferSourceNode | null = null;
 
-  constructor(track: HTMLAudioElement, soundX: HTMLAudioElement, soundO: HTMLAudioElement) {
+  bufferX: AudioBuffer;
+  bufferO: AudioBuffer;
+
+  trackGain: GainNode;
+  audioContext: AudioContext;
+
+  constructor(context: AudioContext, track: AudioBufferSourceNode, bufferX: AudioBuffer, bufferO: AudioBuffer) {
+    this.audioContext = context;
+    this.trackGain = this.audioContext.createGain();
+
     this.track = track;
-    this.sounds = [soundX, soundO];
-    this.track.load()
-    this.sounds.forEach(sound => sound.load());
+    this.bufferX = bufferX;
+    this.bufferO = bufferO;
+
+    this.track.connect(this.trackGain).connect(this.audioContext.destination);
+  }
+
+  static async fromConfig(config: SoundpackConfig) {
+    const context = new AudioContext();
+    const track = await Soundpack.createAudioSourceNode(context, config.trackPath);
+    const bufferX = await fetch(config.soundX).then(response => response.arrayBuffer()).then(arrayBuffer => context.decodeAudioData(arrayBuffer));
+    const bufferO = await fetch(config.soundO).then(response => response.arrayBuffer()).then(arrayBuffer => context.decodeAudioData(arrayBuffer));
+
+    return new Soundpack(context, track, bufferX, bufferO)
+  }
+
+  static async createAudioSourceNode(context: AudioContext, path: string) {
+    // Load and decode the audio buffer once at the start
+    const audio = await fetch(path)
+    const arrayBuffer = await audio.arrayBuffer()
+    const audioBuffer = await context.decodeAudioData(arrayBuffer)
+
+    const source = context.createBufferSource();
+    source.buffer = audioBuffer;
+    return source;
   }
 
   playTrack() {
-    this.track.currentTime = 0;
-    this.track.play();
+    this.track.start(0);
   }
 
   playX() {
-    this.sounds[0].currentTime = 0
-    this.sounds[0].play();
+    this.soundX = this.audioContext.createBufferSource();
+    this.soundX.buffer = this.bufferX;
+    this.soundX.connect(this.audioContext.destination);
+    this.soundX.start(0);
   }
 
   playO() {
-    this.sounds[1].currentTime = 0;
-    this.sounds[1].play();
+    this.soundO = this.audioContext.createBufferSource();
+    this.soundO.buffer = this.bufferO;
+    this.soundO.connect(this.audioContext.destination);
+    this.soundO.start(0);
   }
 
   fadeOutTrack() {
     const fadeOutInterval = setInterval(() => {
-      if (this.track.volume > 0.05) {
-        this.track.volume -= 0.05;
+      if (this.trackGain.gain.value > 0.05) {
+        this.trackGain.gain.value -= 0.05;
       } else {
-        this.track.volume = 0;
         clearInterval(fadeOutInterval);
+        this.track.stop();
       }
     }, 20);
   }
-}
-
-export const loadSoundpack = async (config: SoundpackConfig): Promise<Soundpack> => {
-  const soundX = new Audio(config.soundX);
-  const soundO = new Audio(config.soundO);
-  const track = new Audio(config.trackPath);
-
-  const soundpack = new Soundpack(track, soundX, soundO);
-
-  const promise = new Promise<Soundpack>((resolve, reject) => {
-    track.oncanplaythrough = () => {
-      resolve(soundpack);
-    };
-    track.onerror = () => {
-      reject();
-    };
-  })
-
-  return promise;
 }

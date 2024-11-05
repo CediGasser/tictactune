@@ -1,7 +1,7 @@
 <script lang="ts">
 	import TicTacToe from './TicTacToe.svelte';
 	import Soundpacks from '$lib/assets/soundpacks.json';
-	import { loadSoundpack, type Soundpack } from '$lib/Soundpack.svelte';
+	import { Soundpack } from '$lib/Soundpack.svelte';
 
 	let gameState: 'inHomeScreen' | 'running' | 'xWon' | 'oWon' | 'draw' | 'missedBeat' =
 		$state('inHomeScreen');
@@ -9,7 +9,8 @@
 	let soundpack: Soundpack;
 
 	const startGame = async () => {
-		soundpack = await loadSoundpack(Soundpacks['TicTacFunk']);
+		soundpack = await Soundpack.fromConfig(Soundpacks['TicTacFunk']);
+
 		gameState = 'running';
 		soundpack.playTrack();
 	};
