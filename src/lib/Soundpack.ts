@@ -1,6 +1,7 @@
 type SoundpackConfig = {
   name: string;
   bpm: number;
+  hitsPerBeat: number;
   beatStart: number;
   trackPath: string;
   soundX: string;
@@ -12,10 +13,7 @@ type SoundpackConfig = {
 
 export class Soundpack {
   private sounds: Map<string, Sound> = new Map();
-  private audioBuffers: Map<string, AudioBuffer> = new Map();
-  private audioGains: Map<string, GainNode> = new Map();
-
-  audioContext: AudioContext;
+  private audioContext: AudioContext;
 
   private constructor(context: AudioContext) {
     this.audioContext = context;
@@ -29,13 +27,6 @@ export class Soundpack {
     soundpack.sounds.set('track', await Sound.fromPath(soundpack.audioContext, config.trackPath));
 
     return soundpack;
-  }
-
-  async loadAudioBuffer(key: string, path: string) {
-    const audio = await fetch(path);
-    const arrayBuffer = await audio.arrayBuffer();
-    const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
-    this.audioBuffers.set(key, audioBuffer);
   }
 
   play(key: string) {

@@ -1,32 +1,50 @@
 <script lang="ts">
 	import TicTacToe from './TicTacToe.svelte';
 	import Soundpacks from '$lib/assets/soundpacks.json';
-	import { Soundpack } from '$lib/Soundpack.svelte';
-
-	let gameState: 'inHomeScreen' | 'running' | 'xWon' | 'oWon' | 'draw' | 'missedBeat' =
-		$state('inHomeScreen');
-
-	let soundpack: Soundpack;
+	import { BeatKeeper } from '$lib/BeatKeeper';
+	import { Soundpack } from '$lib/Soundpack';
 
 	const startGame = async () => {
-		soundpack = await Soundpack.fromConfig(Soundpacks['TicTacFunk']);
+		soundpack = await Soundpack.fromConfig(soundpackConfig);
 
 		gameState = 'running';
+		beatKeeper.start();
 		soundpack.play('track');
+	};
+
+	const onMissedBeat = () => {
+		soundpack.fadeOutSound('track');
+		gameState = 'missedBeat';
 	};
 
 	const onGameEnd = (result: 'xWon' | 'oWon' | 'draw') => {
 		soundpack.fadeOutSound('track');
 		gameState = result;
+		beatKeeper.stop();
 	};
 
 	const onMove = (turn: 'X' | 'O') => {
+		const diff = beatKeeper.hit();
+		console.log('diff', diff);
+
 		if (turn === 'X') {
 			soundpack.play('soundX');
 		} else {
 			soundpack.play('soundO');
 		}
 	};
+
+	let soundpackConfig = Soundpacks['TicTacFunk'];
+
+	let gameState: 'inHomeScreen' | 'running' | 'xWon' | 'oWon' | 'draw' | 'missedBeat' =
+		$state('inHomeScreen');
+
+	let soundpack: Soundpack;
+	let beatKeeper = new BeatKeeper(
+		soundpackConfig.beatStart,
+		soundpackConfig.bpm / soundpackConfig.hitsPerBeat
+	);
+	beatKeeper.onMissedBeat = onMissedBeat;
 </script>
 
 <main>
