@@ -11,72 +11,87 @@ type SoundpackConfig = {
 };
 
 export class Soundpack {
-  track: AudioBufferSourceNode;
-  soundX: AudioBufferSourceNode | null = null;
-  soundO: AudioBufferSourceNode | null = null;
+  private sounds: Map<string, Sound> = new Map();
+  private audioBuffers: Map<string, AudioBuffer> = new Map();
+  private audioGains: Map<string, GainNode> = new Map();
 
-  bufferX: AudioBuffer;
-  bufferO: AudioBuffer;
-
-  trackGain: GainNode;
   audioContext: AudioContext;
 
-  constructor(context: AudioContext, track: AudioBufferSourceNode, bufferX: AudioBuffer, bufferO: AudioBuffer) {
+  private constructor(context: AudioContext) {
     this.audioContext = context;
-    this.trackGain = this.audioContext.createGain();
-
-    this.track = track;
-    this.bufferX = bufferX;
-    this.bufferO = bufferO;
-
-    this.track.connect(this.trackGain).connect(this.audioContext.destination);
   }
 
   static async fromConfig(config: SoundpackConfig) {
-    const context = new AudioContext();
-    const track = await Soundpack.createAudioSourceNode(context, config.trackPath);
-    const bufferX = await fetch(config.soundX).then(response => response.arrayBuffer()).then(arrayBuffer => context.decodeAudioData(arrayBuffer));
-    const bufferO = await fetch(config.soundO).then(response => response.arrayBuffer()).then(arrayBuffer => context.decodeAudioData(arrayBuffer));
+    const soundpack = new Soundpack(new AudioContext());
 
-    return new Soundpack(context, track, bufferX, bufferO)
+    soundpack.sounds.set('soundX', await Sound.fromPath(soundpack.audioContext, config.soundX));
+    soundpack.sounds.set('soundO', await Sound.fromPath(soundpack.audioContext, config.soundO));
+    soundpack.sounds.set('track', await Sound.fromPath(soundpack.audioContext, config.trackPath));
+
+    return soundpack;
   }
 
-  static async createAudioSourceNode(context: AudioContext, path: string) {
-    // Load and decode the audio buffer once at the start
-    const audio = await fetch(path)
-    const arrayBuffer = await audio.arrayBuffer()
-    const audioBuffer = await context.decodeAudioData(arrayBuffer)
-
-    const source = context.createBufferSource();
-    source.buffer = audioBuffer;
-    return source;
+  async loadAudioBuffer(key: string, path: string) {
+    const audio = await fetch(path);
+    const arrayBuffer = await audio.arrayBuffer();
+    const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+    this.audioBuffers.set(key, audioBuffer);
   }
 
-  playTrack() {
-    this.track.start(0);
+  play(key: string) {
+    const sound = this.sounds.get(key);
+    sound?.play()
   }
 
-  playX() {
-    this.soundX = this.audioContext.createBufferSource();
-    this.soundX.buffer = this.bufferX;
-    this.soundX.connect(this.audioContext.destination);
-    this.soundX.start(0);
+  fadeOutSound(key: string) {
+    const sound = this.sounds.get(key);
+    if (!sound) {
+      throw new Error(`No gain node found for key ${key}`);
+    }
+
+    sound.fadeOut();
+  }
+}
+
+class Sound {
+  private audioContext: AudioContext;
+  private audioBuffer: AudioBuffer;
+  private gainNode: GainNode | null = null;
+  private sourceNode: AudioBufferSourceNode | null = null;
+
+  constructor(context: AudioContext, buffer: AudioBuffer) {
+    this.audioContext = context;
+    this.audioBuffer = buffer;
   }
 
-  playO() {
-    this.soundO = this.audioContext.createBufferSource();
-    this.soundO.buffer = this.bufferO;
-    this.soundO.connect(this.audioContext.destination);
-    this.soundO.start(0);
+  static async fromPath(context: AudioContext, path: string) {
+    const audio = await fetch(path);
+    const arrayBuffer = await audio.arrayBuffer();
+    const audioBuffer = await context.decodeAudioData(arrayBuffer);
+    return new Sound(context, audioBuffer);
   }
 
-  fadeOutTrack() {
+  play() {
+    this.sourceNode = this.audioContext.createBufferSource();
+    this.sourceNode.buffer = this.audioBuffer;
+
+    this.gainNode = this.audioContext.createGain();
+
+    this.sourceNode.connect(this.gainNode).connect(this.audioContext.destination);
+    this.sourceNode.start(0);
+  }
+
+  fadeOut() {
     const fadeOutInterval = setInterval(() => {
-      if (this.trackGain.gain.value > 0.05) {
-        this.trackGain.gain.value -= 0.05;
+      if (!this.gainNode) {
+        throw new Error('No gain node found');
+      }
+
+      if (this.gainNode.gain.value > 0.05) {
+        this.gainNode.gain.value -= 0.05;
       } else {
+        this.sourceNode?.stop();
         clearInterval(fadeOutInterval);
-        this.track.stop();
       }
     }, 20);
   }

@@ -12,19 +12,19 @@
 		soundpack = await Soundpack.fromConfig(Soundpacks['TicTacFunk']);
 
 		gameState = 'running';
-		soundpack.playTrack();
+		soundpack.play('track');
 	};
 
 	const onGameEnd = (result: 'xWon' | 'oWon' | 'draw') => {
-		soundpack.fadeOutTrack();
+		soundpack.fadeOutSound('track');
 		gameState = result;
 	};
 
 	const onMove = (turn: 'X' | 'O') => {
 		if (turn === 'X') {
-			soundpack.playX();
+			soundpack.play('soundX');
 		} else {
-			soundpack.playO();
+			soundpack.play('soundO');
 		}
 	};
 </script>
