@@ -3,6 +3,7 @@
 	import Soundpacks from '$lib/assets/soundpacks.json';
 	import { BeatKeeper } from '$lib/BeatKeeper';
 	import { Soundpack } from '$lib/Soundpack';
+	import BeatIndicator from './BeatIndicator.svelte';
 
 	const startGame = async () => {
 		soundpack = await Soundpack.fromConfig(soundpackConfig);
@@ -48,6 +49,7 @@
 </script>
 
 <main>
+	<BeatIndicator/>
 	{#if gameState === 'inHomeScreen'}
 		<h1>Tic Tac Tune</h1>
 		<button onclick={startGame}>Start Game</button>
@@ -75,6 +77,7 @@
 		<button onclick={startGame}>Restart Game</button>
 		<button onclick={() => (gameState = 'inHomeScreen')}>Go Back</button>
 	{/if}
+	
 </main>
 
 <style>
