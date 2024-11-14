@@ -5,6 +5,7 @@
 	import { Soundpack } from '$lib/Soundpack';
 	import BeatIndicator from './BeatIndicator.svelte';
 	import { Oscillator } from '$lib/Oscillator.svelte';
+	import Mirrored from '$lib/Mirrored.svelte';
 
 	const startGame = async () => {
 		gameState = 'running';
@@ -57,45 +58,51 @@
 	let beatKeeper = $derived(new BeatKeeper(soundpackConfig.beatStart, hitsPerMinute, onMissedBeat));
 </script>
 
-<main>
+<main class="center">
 	<BeatIndicator oscillator={osc} />
-	{#if gameState === 'inHomeScreen'}
-		<h1>Tic Tac Tune</h1>
-		<button onclick={startGame} disabled={loadingSoundpack}>Start Game</button>
+	{#if gameState !== 'running'}
+		<Mirrored>
+			<div class="center">
+				{#if gameState === 'inHomeScreen'}
+					<h1>Tic Tac Tune</h1>
+					<button onclick={startGame} disabled={loadingSoundpack}>Start Game</button>
+				{/if}
+				{#if gameState === 'xWon'}
+					<h1>X Won</h1>
+					<button onclick={startGame}>Restart Game</button>
+				{/if}
+				{#if gameState === 'oWon'}
+					<h1>O Won</h1>
+					<button onclick={startGame}>Restart Game</button>
+				{/if}
+				{#if gameState === 'draw'}
+					<h1>Draw</h1>
+					<button onclick={startGame}>Restart Game</button>
+				{/if}
+				{#if gameState === 'missedBeat'}
+					<h1>Missed Beat</h1>
+					<button onclick={startGame}>Restart Game</button>
+				{/if}
+			</div>
+		</Mirrored>
 	{/if}
 	{#if gameState === 'running'}
 		<TicTacToe {onGameEnd} {onMove} />
-	{/if}
-	{#if gameState === 'xWon'}
-		<h1>X Won</h1>
-		<button onclick={startGame}>Restart Game</button>
-		<button onclick={() => (gameState = 'inHomeScreen')}>Go Back</button>
-	{/if}
-	{#if gameState === 'oWon'}
-		<h1>O Won</h1>
-		<button onclick={startGame}>Restart Game</button>
-		<button onclick={() => (gameState = 'inHomeScreen')}>Go Back</button>
-	{/if}
-	{#if gameState === 'draw'}
-		<h1>Draw</h1>
-		<button onclick={startGame}>Restart Game</button>
-		<button onclick={() => (gameState = 'inHomeScreen')}>Go Back</button>
-	{/if}
-	{#if gameState === 'missedBeat'}
-		<h1>Missed Beat</h1>
-		<button onclick={startGame}>Restart Game</button>
-		<button onclick={() => (gameState = 'inHomeScreen')}>Go Back</button>
 	{/if}
 </main>
 
 <style>
 	main {
+		height: 100dvh;
+	}
+
+	.center {
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		height: 100dvh;
 	}
+
 	:global(html, body) {
 		margin: 0;
 		padding: 0;
