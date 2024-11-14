@@ -59,44 +59,55 @@
 	let beatKeeper = $derived(new BeatKeeper(soundpackConfig.beatStart, hitsPerMinute, onMissedBeat));
 </script>
 
-<main class="center">
+<main>
 	<BeatIndicator oscillator={osc} />
 	{#if gameState !== 'running'}
-		<Mirrored>
-			{#snippet middle()}
+		<div>
+			<Mirrored>
+				{#snippet middle()}
+					<div class="center padding-block-sm">
+						<button class="play-button" onclick={startGame} disabled={loadingSoundpack}>
+							<Play strokeWidth="4px" />
+						</button>
+					</div>
+				{/snippet}
 				<div class="center padding-block-sm">
-					<button class="play-button" onclick={startGame} disabled={loadingSoundpack}>
-						<Play />
-					</button>
+					{#if gameState === 'inHomeScreen'}
+						<h1>Tic Tac Tune</h1>
+					{/if}
+					{#if gameState === 'xWon'}
+						<h1>X Won</h1>
+					{/if}
+					{#if gameState === 'oWon'}
+						<h1>O Won</h1>
+					{/if}
+					{#if gameState === 'draw'}
+						<h1>Draw</h1>
+					{/if}
+					{#if gameState === 'missedBeat'}
+						<h1>Missed Beat</h1>
+					{/if}
 				</div>
-			{/snippet}
-			<div class="center padding-block-sm">
-				{#if gameState === 'inHomeScreen'}
-					<h1>Tic Tac Tune</h1>
-				{/if}
-				{#if gameState === 'xWon'}
-					<h1>X Won</h1>
-				{/if}
-				{#if gameState === 'oWon'}
-					<h1>O Won</h1>
-				{/if}
-				{#if gameState === 'draw'}
-					<h1>Draw</h1>
-				{/if}
-				{#if gameState === 'missedBeat'}
-					<h1>Missed Beat</h1>
-				{/if}
-			</div>
-		</Mirrored>
+			</Mirrored>
+		</div>
 	{/if}
 	{#if gameState === 'running'}
-		<TicTacToe {onGameEnd} {onMove} />
+		<div>
+			<TicTacToe {onGameEnd} {onMove} />
+		</div>
 	{/if}
 </main>
 
 <style>
 	main {
 		height: 100dvh;
+		display: grid;
+		align-items: center;
+		justify-items: center;
+	}
+
+	main > div {
+		grid-area: 1 / 1 / 2 / 2;
 	}
 
 	.center {
@@ -116,10 +127,5 @@
 		cursor: pointer;
 		text-align: center;
 		transform: translateX(1px);
-	}
-
-	:global(html, body) {
-		margin: 0;
-		padding: 0;
 	}
 </style>
