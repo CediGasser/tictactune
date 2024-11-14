@@ -4,24 +4,26 @@
 	import { BeatKeeper } from '$lib/BeatKeeper';
 	import { Soundpack } from '$lib/Soundpack';
 	import BeatIndicator from './BeatIndicator.svelte';
+	import { Oscillator } from '$lib/Oscillator.svelte';
 
 	const startGame = async () => {
-		soundpack = await Soundpack.fromConfig(soundpackConfig);
-
 		gameState = 'running';
-		beatKeeper.start();
 		soundpack.play('track');
+		beatKeeper.start();
+		osc.start();
 	};
 
 	const onMissedBeat = () => {
-		soundpack.fadeOutSound('track');
 		gameState = 'missedBeat';
+		soundpack.fadeOutSound('track');
+		osc.stop();
 	};
 
 	const onGameEnd = (result: 'xWon' | 'oWon' | 'draw') => {
-		soundpack.fadeOutSound('track');
 		gameState = result;
+		soundpack.fadeOutSound('track');
 		beatKeeper.stop();
+		osc.stop();
 	};
 
 	const onMove = (turn: 'X' | 'O') => {
@@ -35,24 +37,31 @@
 		}
 	};
 
-	let soundpackConfig = Soundpacks['TicTacFunk'];
+	const soundpackConfig = Soundpacks['TicTacFunk'];
+	const hitsPerMinute = $derived(soundpackConfig.bpm / soundpackConfig.hitsPerBeat);
+	const osc = $derived(new Oscillator(soundpackConfig.beatStart, hitsPerMinute));
+	let loadingSoundpack = $state(true);
 
 	let gameState: 'inHomeScreen' | 'running' | 'xWon' | 'oWon' | 'draw' | 'missedBeat' =
 		$state('inHomeScreen');
 
 	let soundpack: Soundpack;
-	let beatKeeper = new BeatKeeper(
-		soundpackConfig.beatStart,
-		soundpackConfig.bpm / soundpackConfig.hitsPerBeat
-	);
-	beatKeeper.onMissedBeat = onMissedBeat;
+	$effect(() => {
+		loadingSoundpack = true;
+		Soundpack.fromConfig(soundpackConfig).then((sp) => {
+			soundpack = sp;
+			loadingSoundpack = false;
+		});
+	});
+
+	let beatKeeper = $derived(new BeatKeeper(soundpackConfig.beatStart, hitsPerMinute, onMissedBeat));
 </script>
 
 <main>
-	<BeatIndicator/>
+	<BeatIndicator oscillator={osc} />
 	{#if gameState === 'inHomeScreen'}
 		<h1>Tic Tac Tune</h1>
-		<button onclick={startGame}>Start Game</button>
+		<button onclick={startGame} disabled={loadingSoundpack}>Start Game</button>
 	{/if}
 	{#if gameState === 'running'}
 		<TicTacToe {onGameEnd} {onMove} />
@@ -77,7 +86,6 @@
 		<button onclick={startGame}>Restart Game</button>
 		<button onclick={() => (gameState = 'inHomeScreen')}>Go Back</button>
 	{/if}
-	
 </main>
 
 <style>

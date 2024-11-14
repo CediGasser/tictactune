@@ -11,11 +11,12 @@ export class BeatKeeper {
     return 60000 / this.bpm;
   }
 
-  public onMissedBeat: Function = () => { };
+  private onMissedBeat: Function = () => { };
 
-  constructor(beatStart: number, bpm: number) {
+  constructor(beatStart: number, bpm: number, onMissedBeat: Function) {
     this.bpm = bpm;
     this.beatStart = beatStart;
+    this.onMissedBeat = onMissedBeat;
   }
 
   public start = () => {
