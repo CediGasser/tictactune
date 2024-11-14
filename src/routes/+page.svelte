@@ -96,4 +96,8 @@
 		align-items: center;
 		height: 100dvh;
 	}
+	:global(html, body) {
+		margin: 0;
+		padding: 0;
+	}
 </style>
