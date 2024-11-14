@@ -24,7 +24,7 @@
 		margin-right: 0px;
 		margin-bottom: 25px;
 		width: 100%;
-		height: calc(100vh - 2 * 25px);
+		height: calc(100dvh - 2 * 25px);
 	}
 
 	.ball {
