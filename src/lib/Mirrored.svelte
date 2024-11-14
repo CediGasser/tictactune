@@ -3,13 +3,17 @@
 
 	interface Props {
 		children: Snippet;
+		middle: Snippet;
 	}
-	let { children }: Props = $props();
+	let { children, middle }: Props = $props();
 </script>
 
 <div>
 	<div class="inverted">
 		{@render children?.()}
+	</div>
+	<div>
+		{@render middle?.()}
 	</div>
 	<div>
 		{@render children?.()}

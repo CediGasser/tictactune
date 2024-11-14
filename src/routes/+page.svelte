@@ -6,6 +6,7 @@
 	import BeatIndicator from './BeatIndicator.svelte';
 	import { Oscillator } from '$lib/Oscillator.svelte';
 	import Mirrored from '$lib/Mirrored.svelte';
+	import Play from 'svelte-lucide/Play.svelte';
 
 	const startGame = async () => {
 		gameState = 'running';
@@ -62,26 +63,28 @@
 	<BeatIndicator oscillator={osc} />
 	{#if gameState !== 'running'}
 		<Mirrored>
-			<div class="center">
+			{#snippet middle()}
+				<div class="center padding-block-sm">
+					<button class="play-button" onclick={startGame} disabled={loadingSoundpack}>
+						<Play />
+					</button>
+				</div>
+			{/snippet}
+			<div class="center padding-block-sm">
 				{#if gameState === 'inHomeScreen'}
 					<h1>Tic Tac Tune</h1>
-					<button onclick={startGame} disabled={loadingSoundpack}>Start Game</button>
 				{/if}
 				{#if gameState === 'xWon'}
 					<h1>X Won</h1>
-					<button onclick={startGame}>Restart Game</button>
 				{/if}
 				{#if gameState === 'oWon'}
 					<h1>O Won</h1>
-					<button onclick={startGame}>Restart Game</button>
 				{/if}
 				{#if gameState === 'draw'}
 					<h1>Draw</h1>
-					<button onclick={startGame}>Restart Game</button>
 				{/if}
 				{#if gameState === 'missedBeat'}
 					<h1>Missed Beat</h1>
-					<button onclick={startGame}>Restart Game</button>
 				{/if}
 			</div>
 		</Mirrored>
@@ -101,6 +104,18 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+	}
+
+	.padding-block-sm {
+		padding: 2rem;
+	}
+
+	.play-button {
+		background-color: transparent;
+		border: none;
+		cursor: pointer;
+		text-align: center;
+		transform: translateX(1px);
 	}
 
 	:global(html, body) {
