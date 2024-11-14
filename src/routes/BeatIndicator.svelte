@@ -7,8 +7,6 @@
 	let { oscillator }: Props = $props();
 
 	let position = $derived((oscillator.value + 1) * 50); // starting position of the ball
-
-	$inspect(position);
 </script>
 
 <div class="container">

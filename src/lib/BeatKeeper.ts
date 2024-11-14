@@ -1,7 +1,7 @@
 export class BeatKeeper {
   public beatStart: number = 1000;
   public bpm: number = 120;
-  public threshold: number = 50;
+  public threshold: number = 100;
 
   private checkTimeoutId: number = 0;
   private startTime: number = 0;
