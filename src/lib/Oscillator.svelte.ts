@@ -29,6 +29,7 @@ export class Oscillator {
     this.startAnimationTime = 0;
     this.animationFrameId = 0;
     this.timeoutId = 0;
+    this._value = 0;
   }
 
   private update = (t: number): void => {

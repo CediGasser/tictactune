@@ -107,7 +107,7 @@
 	}
 
 	.padding-block-sm {
-		padding: 2rem;
+		padding: 1rem;
 	}
 
 	.play-button {
