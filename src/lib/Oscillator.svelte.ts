@@ -6,11 +6,15 @@ export class Oscillator {
   private startAnimationTime: number = 0;
   private timeoutId: number = 0;
 
+  private inversionFactor: number = 1;
   private _value: number = $state(0);
+  private _maybeInverted: number = $derived(this._value * this.inversionFactor)
 
   constructor(startTime: number, bpm: number) {
     this.startTime = startTime;
     this.interval = 60000 / bpm;
+
+    this.inversionFactor = Math.random() > 0.5 ? 1 : -1;
   }
 
   public start = () => {
@@ -73,6 +77,6 @@ export class Oscillator {
   }
 
   public get value(): number {
-    return this._value;
+    return this._maybeInverted;
   }
 }
