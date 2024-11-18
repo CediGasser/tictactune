@@ -69,12 +69,8 @@ export class Oscillator {
   }
 
   private easingFn = (t: number) => {
-    const eased = Math.pow(t, 4);
-    if (t < 0) {
-      return -eased;
-    } else {
-      return t * t * t * t;
-    }
+    const eased = Math.pow(t, 3);
+    return eased;
   }
 
   public get value(): number {
