@@ -20,6 +20,7 @@ export class Oscillator {
   public start = () => {
     this._value = 0;
 
+    this.inversionFactor = Math.random() > 0.5 ? 1 : -1;
     this.animationFrameId = requestAnimationFrame(this.update.bind(this));
   }
 
