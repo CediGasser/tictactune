@@ -7,6 +7,7 @@
 	import { Oscillator } from '$lib/Oscillator.svelte';
 	import Mirrored from '$lib/Mirrored.svelte';
 	import Play from 'svelte-lucide/Play.svelte';
+	import { trackEvent } from '$lib/umami';
 
 	const startGame = async () => {
 		gameState = 'running';
@@ -19,6 +20,7 @@
 		gameState = 'missedBeat';
 		soundpack.fadeOutSound('track');
 		osc.stop();
+		trackEvent('Game ended: missedBeat');
 	};
 
 	const onGameEnd = (result: 'xWon' | 'oWon' | 'draw') => {
@@ -26,6 +28,7 @@
 		soundpack.fadeOutSound('track');
 		beatKeeper.stop();
 		osc.stop();
+		trackEvent('Game ended: ' + result);
 	};
 
 	const onMove = (turn: 'X' | 'O') => {
