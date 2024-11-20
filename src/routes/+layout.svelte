@@ -15,4 +15,8 @@
 	keywords="Tic Tac Toe, Game, Fun, Music"
 />
 
+<svelte:head>
+	<link rel="icon" href="/favicon.png" />
+</svelte:head>
+
 {@render children?.()}
