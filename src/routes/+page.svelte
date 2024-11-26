@@ -9,8 +9,9 @@
 	import Play from 'svelte-lucide/Play.svelte';
 	import { trackEvent } from '$lib/umami';
 
-	const startGame = async () => {
+	const startGame = () => {
 		gameState = 'running';
+		ticTacToeComponent?.reset();
 		soundpack.stopAll();
 		soundpack.play('track');
 		beatKeeper.start();
@@ -43,9 +44,13 @@
 		}
 	};
 
+	let ticTacToeComponent: TicTacToe | null = $state(null);
+
 	const soundpackConfig = Soundpacks['TicTacFunk'];
-	const hitsPerMinute = $derived(soundpackConfig.bpm / soundpackConfig.hitsPerBeat);
-	const osc = $derived(new Oscillator(soundpackConfig.beatStart, hitsPerMinute));
+	let hitsPerMinute = $derived(soundpackConfig.bpm / soundpackConfig.hitsPerBeat);
+	let osc = $derived(new Oscillator(soundpackConfig.beatStart, hitsPerMinute));
+	let beatKeeper = $derived(new BeatKeeper(soundpackConfig.beatStart, hitsPerMinute, onMissedBeat));
+
 	let loadingSoundpack = $state(true);
 
 	let gameState: 'inHomeScreen' | 'running' | 'xWon' | 'oWon' | 'draw' | 'missedBeat' =
@@ -59,8 +64,6 @@
 			loadingSoundpack = false;
 		});
 	});
-
-	let beatKeeper = $derived(new BeatKeeper(soundpackConfig.beatStart, hitsPerMinute, onMissedBeat));
 </script>
 
 <main>
@@ -97,7 +100,7 @@
 	{/if}
 	{#if gameState === 'running'}
 		<div>
-			<TicTacToe {onGameEnd} {onMove} />
+			<TicTacToe bind:this={ticTacToeComponent} {onGameEnd} {onMove} />
 		</div>
 	{/if}
 </main>

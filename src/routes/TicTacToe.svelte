@@ -52,6 +52,13 @@
 			onGameEnd('draw');
 		}
 	}
+
+	export function reset() {
+		board = Array(9).fill(null);
+		winner = null;
+		turn = 'X';
+		isDraw = false;
+	}
 </script>
 
 <div transition:fade class="glass-morphism">
