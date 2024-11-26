@@ -34,13 +34,13 @@ export class Soundpack {
     sound?.play()
   }
 
+  stopAll() {
+    this.sounds.forEach(sound => sound.stop());
+  }
+
   fadeOutSound(key: string) {
     const sound = this.sounds.get(key);
-    if (!sound) {
-      throw new Error(`No gain node found for key ${key}`);
-    }
-
-    sound.fadeOut();
+    sound?.fadeOut();
   }
 }
 
@@ -49,6 +49,7 @@ class Sound {
   private audioBuffer: AudioBuffer;
   private gainNode: GainNode | null = null;
   private sourceNode: AudioBufferSourceNode | null = null;
+  private fadeOutInterval?: number;
 
   constructor(context: AudioContext, buffer: AudioBuffer) {
     this.audioContext = context;
@@ -72,8 +73,13 @@ class Sound {
     this.sourceNode.start(0);
   }
 
+  stop() {
+    clearInterval(this.fadeOutInterval);
+    this.sourceNode?.stop();
+  }
+
   fadeOut() {
-    const fadeOutInterval = setInterval(() => {
+    this.fadeOutInterval = setInterval(() => {
       if (!this.gainNode) {
         throw new Error('No gain node found');
       }
@@ -82,7 +88,7 @@ class Sound {
         this.gainNode.gain.value -= 0.05;
       } else {
         this.sourceNode?.stop();
-        clearInterval(fadeOutInterval);
+        clearInterval(this.fadeOutInterval);
       }
     }, 20);
   }

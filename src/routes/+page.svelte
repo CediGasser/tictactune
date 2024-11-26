@@ -11,6 +11,7 @@
 
 	const startGame = async () => {
 		gameState = 'running';
+		soundpack.stopAll();
 		soundpack.play('track');
 		beatKeeper.start();
 		osc.start();
