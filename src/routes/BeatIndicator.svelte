@@ -6,28 +6,57 @@
 	}
 	let { oscillator }: Props = $props();
 
-	let position = $derived((oscillator.value + 1) * 50); // starting position of the ball
+	let position = $derived((oscillator.value + 1) * 25 + 25); // starting position of the ball
 </script>
 
-<div class="container">
-	<div class="ball" style="top: {position}%;"></div>
+<div class="wrapper">
+	<div class="container">
+		<div class="target top"></div>
+		<div class="target bottom"></div>
+		<div class="ball" style="top: {position}%;"></div>
+	</div>
 </div>
 
 <style>
-	.container {
-		position: absolute;
-		top: 0;
-		left: 0;
+	.wrapper {
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		z-index: -1;
-		margin-top: 25px;
-		margin-left: 0px;
-		margin-right: 0px;
-		margin-bottom: 25px;
 		width: 100%;
-		height: calc(100dvh - 2 * 25px);
+		height: 100dvh;
+	}
+
+	.container {
+		display: grid;
+		align-items: center;
+		justify-items: center;
+		width: 100%;
+		height: 50dvh;
+	}
+
+	.target {
+		grid-area: 1 / 1 / 2 / 2;
+		position: absolute;
+		left: 50%;
+		width: 60px;
+		height: 60px;
+		border-radius: 50%;
+		background-color: transparent;
+		border: 4px solid grey;
+		transform: translate(-50%, -50%);
+	}
+
+	.top {
+		top: 25%;
+	}
+
+	.bottom {
+		top: 75%;
 	}
 
 	.ball {
+		grid-area: 1 / 1 / 2 / 2;
 		position: absolute;
 		top: 0;
 		left: 50%;

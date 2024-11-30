@@ -67,7 +67,9 @@
 </script>
 
 <main>
-	<BeatIndicator oscillator={osc} />
+	<div>
+		<BeatIndicator oscillator={osc} />
+	</div>
 	{#if gameState !== 'running'}
 		<div>
 			<Mirrored>
