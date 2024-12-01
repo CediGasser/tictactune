@@ -8,6 +8,8 @@
 	import Mirrored from '$lib/Mirrored.svelte';
 	import Play from 'svelte-lucide/Play.svelte';
 	import { trackEvent } from '$lib/umami';
+	import { Countdown } from '$lib/Countdown.svelte';
+	import { fade } from 'svelte/transition';
 
 	const startGame = () => {
 		gameState = 'running';
@@ -16,6 +18,7 @@
 		soundpack.play('track');
 		beatKeeper.start();
 		osc.start();
+		countdown.start();
 	};
 
 	const onMissedBeat = () => {
@@ -49,6 +52,7 @@
 	const soundpackConfig = Soundpacks['TicTacFunk'];
 	let hitsPerMinute = $derived(soundpackConfig.bpm / soundpackConfig.hitsPerBeat);
 	let osc = $derived(new Oscillator(soundpackConfig.beatStart, hitsPerMinute));
+	let countdown = $derived(new Countdown(soundpackConfig.beatStart, hitsPerMinute));
 	let beatKeeper = $derived(new BeatKeeper(soundpackConfig.beatStart, hitsPerMinute, onMissedBeat));
 
 	let loadingSoundpack = $state(true);
@@ -104,6 +108,13 @@
 		<div>
 			<TicTacToe bind:this={ticTacToeComponent} {onGameEnd} {onMove} />
 		</div>
+		{#if countdown.showNumber}
+			<div transition:fade={{ duration: 50 }} class="center">
+				<span class="countdown">
+					{countdown.value}
+				</span>
+			</div>
+		{/if}
 	{/if}
 </main>
 
@@ -124,6 +135,12 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+	}
+
+	.countdown {
+		font-size: 16rem;
+		font-weight: bold;
+		z-index: 1;
 	}
 
 	.padding-block-sm {
