@@ -20,8 +20,8 @@ export class Countdown {
     return this._showNumber;
   }
 
-  constructor(startTime: number, bpm: number) {
-    this.bpm = bpm;
+  constructor(startTime: number, hitsPerMinute: number) {
+    this.bpm = hitsPerMinute;
     this.startValue = Math.floor(startTime / this.interval);
     this.firstBeat = startTime - this.startValue * this.interval;
   }
@@ -41,5 +41,6 @@ export class Countdown {
 
   public stop = () => {
     clearTimeout(this.timeoutId);
+    this._value = -1;
   }
 }

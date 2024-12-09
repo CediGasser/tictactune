@@ -13,8 +13,8 @@ export class BeatKeeper {
 
   private onMissedBeat: Function = () => { };
 
-  constructor(beatStart: number, bpm: number, onMissedBeat: Function) {
-    this.bpm = bpm;
+  constructor(beatStart: number, hitsPerMinute: number, onMissedBeat: Function) {
+    this.bpm = hitsPerMinute;
     this.beatStart = beatStart;
     this.onMissedBeat = onMissedBeat;
   }

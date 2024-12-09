@@ -2,13 +2,25 @@
   "TicTacFunk": {
     "name": "Tic Tac Funk",
     "bpm": 115,
-    "hitsPerBeat": 4,
-    "beatStart": 4222,
-    "trackPath": "/sounds/funk/track.mp3",
+    "hitsPerBeat": 0.25,
+    "beatStart": 4174,
+    "track": "/sounds/funk/track.mp3",
     "soundX": "/sounds/funk/x.mp3",
     "soundO": "/sounds/funk/o.mp3",
-    "soundWin": "/sounds/funk/win.mp3",
-    "soundDraw": "/sounds/funk/draw.mp3",
+    "soundXWon": "/sounds/funk/xwon.mp3",
+    "soundOWon": "/sounds/funk/owon.mp3",
     "soundOffbeat": "/sounds/funk/offbeat.mp3"
+  },
+  "DnB": {
+    "name": "DnB",
+    "bpm": 182,
+    "hitsPerBeat": 0.25,
+    "beatStart": 5275,
+    "track": "/sounds/dnb/track.mp3",
+    "soundX": "/sounds/dnb/x.mp3",
+    "soundO": "/sounds/dnb/o.mp3",
+    "soundXWon": "/sounds/dnb/xwon.mp3",
+    "soundOWon": "/sounds/dnb/owon.mp3",
+    "soundOffbeat": "/sounds/dnb/offbeat.mp3"
   }
 }

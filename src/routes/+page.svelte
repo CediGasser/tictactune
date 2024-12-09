@@ -24,6 +24,8 @@
 	const onMissedBeat = () => {
 		gameState = 'missedBeat';
 		soundpack.fadeOutSound('track');
+		soundpack.play('soundOffbeat');
+		countdown.stop();
 		osc.stop();
 		trackEvent('Game ended: missedBeat');
 	};
@@ -31,6 +33,7 @@
 	const onGameEnd = (result: 'xWon' | 'oWon' | 'draw') => {
 		gameState = result;
 		soundpack.fadeOutSound('track');
+		soundpack.play(result === 'xWon' ? 'soundXWon' : 'soundOWon');
 		beatKeeper.stop();
 		osc.stop();
 		trackEvent('Game ended: ' + result);
@@ -49,8 +52,9 @@
 
 	let ticTacToeComponent: TicTacToe | null = $state(null);
 
-	const soundpackConfig = Soundpacks['TicTacFunk'];
-	let hitsPerMinute = $derived(soundpackConfig.bpm / soundpackConfig.hitsPerBeat);
+	let soundpackKey: keyof typeof Soundpacks = $state('TicTacFunk');
+	let soundpackConfig = $derived(Soundpacks[soundpackKey]);
+	let hitsPerMinute = $derived(soundpackConfig.bpm * soundpackConfig.hitsPerBeat);
 	let osc = $derived(new Oscillator(soundpackConfig.beatStart, hitsPerMinute));
 	let countdown = $derived(new Countdown(soundpackConfig.beatStart, hitsPerMinute));
 	let beatKeeper = $derived(new BeatKeeper(soundpackConfig.beatStart, hitsPerMinute, onMissedBeat));
@@ -70,40 +74,20 @@
 	});
 </script>
 
+{#snippet soundpackSelector()}
+	<div class="center padding-block-sm soundpack">
+		<select bind:value={soundpackKey}>
+			{#each Object.entries(Soundpacks) as [key, { name }]}
+				<option value={key}>{name}</option>
+			{/each}
+		</select>
+	</div>
+{/snippet}
+
 <main>
 	<div>
-		<BeatIndicator oscillator={osc} />
+		<BeatIndicator showTargets={gameState === 'running'} oscillator={osc} />
 	</div>
-	{#if gameState !== 'running'}
-		<div>
-			<Mirrored>
-				{#snippet middle()}
-					<div class="center padding-block-sm">
-						<button class="play-button" onclick={startGame} disabled={loadingSoundpack}>
-							<Play strokeWidth="4px" />
-						</button>
-					</div>
-				{/snippet}
-				<div class="center padding-block-sm">
-					{#if gameState === 'inHomeScreen'}
-						<h1>Tic Tac Tune</h1>
-					{/if}
-					{#if gameState === 'xWon'}
-						<h1>X Won</h1>
-					{/if}
-					{#if gameState === 'oWon'}
-						<h1>O Won</h1>
-					{/if}
-					{#if gameState === 'draw'}
-						<h1>Draw</h1>
-					{/if}
-					{#if gameState === 'missedBeat'}
-						<h1>Missed Beat</h1>
-					{/if}
-				</div>
-			</Mirrored>
-		</div>
-	{/if}
 	{#if gameState === 'running'}
 		<div>
 			<TicTacToe bind:this={ticTacToeComponent} {onGameEnd} {onMove} />
@@ -115,6 +99,41 @@
 				</span>
 			</div>
 		{/if}
+	{/if}
+	{#if gameState !== 'running'}
+		<div transition:fade={{ duration: 50 }}>
+			<Mirrored>
+				{#snippet middle()}
+					<div class="center">
+						<button class="play-button" onclick={startGame} disabled={loadingSoundpack}>
+							<Play strokeWidth="4px" />
+						</button>
+					</div>
+				{/snippet}
+				<div class="center padding-block-sm">
+					{#if gameState === 'inHomeScreen'}
+						<h1>Tic Tac Tune</h1>
+						{@render soundpackSelector()}
+					{/if}
+					{#if gameState === 'xWon'}
+						<h1>X Won</h1>
+						{@render soundpackSelector()}
+					{/if}
+					{#if gameState === 'oWon'}
+						<h1>O Won</h1>
+						{@render soundpackSelector()}
+					{/if}
+					{#if gameState === 'draw'}
+						<h1>Draw</h1>
+						{@render soundpackSelector()}
+					{/if}
+					{#if gameState === 'missedBeat'}
+						<h1>Missed Beat</h1>
+						{@render soundpackSelector()}
+					{/if}
+				</div>
+			</Mirrored>
+		</div>
 	{/if}
 </main>
 
@@ -135,6 +154,21 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+	}
+
+	h1 {
+		margin-bottom: 0;
+	}
+
+	.soundpack {
+		width: 100%;
+	}
+
+	.soundpack > select {
+		width: 100%;
+		padding: 0.5rem;
+		font-size: 1rem;
+		border-radius: 16px;
 	}
 
 	.countdown {

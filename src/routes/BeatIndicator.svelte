@@ -1,18 +1,22 @@
 <script lang="ts">
 	import { Oscillator } from '$lib/Oscillator.svelte';
+	import { fade } from 'svelte/transition';
 
 	interface Props {
 		oscillator: Oscillator;
+		showTargets: boolean;
 	}
-	let { oscillator }: Props = $props();
+	let { oscillator, showTargets }: Props = $props();
 
 	let position = $derived((oscillator.value + 1) * 25 + 25); // starting position of the ball
 </script>
 
 <div class="wrapper">
 	<div class="container">
-		<div class="target top"></div>
-		<div class="target bottom"></div>
+		{#if showTargets}
+			<div transition:fade={{ duration: 50 }} class="target top"></div>
+			<div transition:fade={{ duration: 50 }} class="target bottom"></div>
+		{/if}
 		<div class="ball" style="top: {position}%;"></div>
 	</div>
 </div>

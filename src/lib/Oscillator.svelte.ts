@@ -10,9 +10,9 @@ export class Oscillator {
   private _value: number = $state(0);
   private _maybeInverted: number = $derived(this._value * this.inversionFactor)
 
-  constructor(startTime: number, bpm: number) {
+  constructor(startTime: number, hitsPerMinute: number) {
     this.startTime = startTime;
-    this.interval = 60000 / bpm;
+    this.interval = 60000 / hitsPerMinute;
 
     this.inversionFactor = Math.random() > 0.5 ? 1 : -1;
   }

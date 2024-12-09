@@ -3,11 +3,11 @@ type SoundpackConfig = {
   bpm: number;
   hitsPerBeat: number;
   beatStart: number;
-  trackPath: string;
+  track: string;
   soundX: string;
   soundO: string,
-  soundWin: string,
-  soundDraw: string,
+  soundXWon: string,
+  soundOWon: string,
   soundOffbeat: string
 };
 
@@ -22,9 +22,12 @@ export class Soundpack {
   static async fromConfig(config: SoundpackConfig) {
     const soundpack = new Soundpack(new AudioContext());
 
+    soundpack.sounds.set('track', await Sound.fromPath(soundpack.audioContext, config.track));
     soundpack.sounds.set('soundX', await Sound.fromPath(soundpack.audioContext, config.soundX));
     soundpack.sounds.set('soundO', await Sound.fromPath(soundpack.audioContext, config.soundO));
-    soundpack.sounds.set('track', await Sound.fromPath(soundpack.audioContext, config.trackPath));
+    soundpack.sounds.set('soundXWon', await Sound.fromPath(soundpack.audioContext, config.soundXWon));
+    soundpack.sounds.set('soundOWon', await Sound.fromPath(soundpack.audioContext, config.soundOWon));
+    soundpack.sounds.set('soundOffbeat', await Sound.fromPath(soundpack.audioContext, config.soundOffbeat));
 
     return soundpack;
   }
